@@ -47,7 +47,7 @@ class Product(declarative_base()):
     name = db.Column(db.String(45))
     type = db.Column(db.String(45))
     rating = db.Column(db.SmallInteger)
-    price = db.Column(db.Numeric)
+    price = db.Column(db.Float)
     number = db.Column(db.SmallInteger)
 
     def as_dict(self):
