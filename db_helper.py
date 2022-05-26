@@ -33,10 +33,8 @@ class DbHelper:
         return {"products": products}
 
     def get_product_by_id(self, id):
-        for p in self.get_products():
-            if p.id == id:
-                return p.as_dict()
-        return None
+        product = self._session.get(Product, id)
+        return product.as_dict() if product else None
 
 
 class Product(declarative_base()):

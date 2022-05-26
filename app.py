@@ -1,7 +1,6 @@
 import random
 import time
 from datetime import datetime
-
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 
@@ -38,9 +37,8 @@ class Products(Resource):
 
         args = parser.parse_args()
 
-        if args["type"]:
-            if args["type"] not in config.ALLOWED_PRODUCT_TYPES:
-                return {"message": "product type '{}' is not applicable".format(args["type"])}, 400
+        if args["type"] and args["type"] not in config.ALLOWED_PRODUCT_TYPES:
+            return {"message": "product type '{}' is not applicable".format(args["type"])}, 400
 
         return db_helper.get_products_as_json(args["type"])
 
@@ -56,9 +54,8 @@ class Product(Resource):
         if not args["id"]:
             return {"message": "missing required parameter in the query string ('id')"}, 400
 
-        if args["type"]:
-            if args["type"] not in config.ALLOWED_PRODUCT_TYPES:
-                return {"message": "product type '{}' is not applicable".format(args["type"])}, 400
+        if args["type"] and args["type"] not in config.ALLOWED_PRODUCT_TYPES:
+            return {"message": "product type '{}' is not applicable".format(args["type"])}, 400
 
         product = db_helper.get_product_by_id(args["id"])
 
@@ -120,6 +117,9 @@ class Product(Resource):
         if args["type"] and (args["id"] or (args["num"] is not None)):
             return {"message": "not applicable combination of parameters in the query string"}, 400
 
+        if args["type"] and args["type"] not in config.ALLOWED_PRODUCT_TYPES:
+            return {"message": "product type '{}' is not applicable".format(args["type"])}, 400
+
         if args["id"]:
             if args["num"] is not None:
                 db_helper.update_product_number(args["id"], args["num"])
@@ -127,10 +127,7 @@ class Product(Resource):
                 db_helper.delete_product(args["id"])
             return {"message": "product number updated"}
 
-        if args["type"]:
-            if args["type"] not in config.ALLOWED_PRODUCT_TYPES:
-                return {"message": "product type '{}' is not applicable".format(args["type"])}, 400
-            return {"message": "products with type '{}' removed".format(args["type"])}
+        return {"message": "products with type '{}' removed".format(args["type"])}
 
 
 class ProductNumber(Resource):
